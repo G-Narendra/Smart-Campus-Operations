@@ -1,0 +1,9 @@
+langgraph
+langchain-google-genai
+streamlit
+fastapi
+uvicorn
+sqlalchemy
+python-dotenv
+pydantic
+datetime
