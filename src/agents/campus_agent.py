@@ -40,7 +40,7 @@ Be extremely helpful, polite, and format your final answers clearly.
 """
 
 # Create the LangGraph agent
-campus_agent_executor = create_react_agent(llm, tools, state_modifier=system_prompt)
+campus_agent_executor = create_react_agent(llm, tools, prompt=system_prompt)
 
 def run_campus_agent(user_query: str) -> str:
     """Run the agent on a user query and return the final string response."""
