@@ -42,10 +42,38 @@ Be extremely helpful, polite, and format your final answers clearly.
 # Create the LangGraph agent
 campus_agent_executor = create_react_agent(llm, tools, prompt=system_prompt)
 
+def extract_text(content) -> str:
+    """Extract clean text from structural list-of-dicts or JSON response formats."""
+    import ast
+    import json
+    if not content:
+        return ""
+    if isinstance(content, str):
+        content = content.strip()
+        if (content.startswith("[") and content.endswith("]")) or (content.startswith("{") and content.endswith("}")):
+            try:
+                try:
+                    parsed = json.loads(content)
+                except Exception:
+                    parsed = ast.literal_eval(content)
+                return extract_text(parsed)
+            except Exception:
+                pass
+    if isinstance(content, list):
+        texts = []
+        for item in content:
+            if isinstance(item, dict):
+                if "text" in item:
+                    texts.append(item["text"])
+        if texts:
+            return "\n".join(texts)
+    return str(content)
+
 def run_campus_agent(user_query: str) -> str:
     """Run the agent on a user query and return the final string response."""
     response = campus_agent_executor.invoke({"messages": [HumanMessage(content=user_query)]})
-    return response["messages"][-1].content
+    raw_content = response["messages"][-1].content
+    return extract_text(raw_content)
 
 if __name__ == "__main__":
     # Test locally
